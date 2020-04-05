@@ -1,0 +1,22 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET         /                                           controllers.MainController.index
+GET         /web                                        controllers.FoodController.index
+POST        /web                                        controllers.FoodController.createOrUpdate
+POST        /web/create                                 controllers.FoodController.create
+POST        /web/update                                 controllers.FoodController.update
+DELETE      /web/delete/:id                             controllers.FoodController.delete(id: Int)
+GET         /persons                                    controllers.PersonController.getPersons
+GET         /foods                                      controllers.FoodController.index
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /htmls/*file                                controllers.Assets.at(path="/public/htmls", file)
+GET         /stylesheets/*file                          controllers.Assets.at(path="/public/stylesheets", file)
+GET         /public/client/front-lab/build/*file        controllers.Assets.at(path="/public/client/front-lab/build", file)
+GET         /static/*file                               controllers.Assets.versioned(path="/public/client/front-lab/build/static", file: Asset)
+#GET         /static/js/*file                            controllers.Assets.at(path="/static/js", file)
+#GET     /                           controllers.Assets.at(path="./views/frames.scala.html")

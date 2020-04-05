@@ -1,0 +1,65 @@
+@import front_end_lab.Model.Food
+@import java.time.LocalDateTime.now
+@import front_end_lab.Dto.{CreateFood, UpdateFood}
+
+@(createFood: Form[CreateFood], updateFood: Form[UpdateFood])(foods: Seq[Food])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+@request.flash.get("success").map { key =>
+    @request.messages(key)
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Foods</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("/public", "/images/favicon.png")"/>
+        <link rel="stylesheet" type="text/css" href='@routes.Assets.at("/public/stylesheets", "foods.css")'>
+    </head>
+    <body>
+        <script src='@routes.Assets.versioned("/public", "/javascripts/foods.js")'></script>
+        @form(routes.FoodController.create(), 'id -> "create_form") {
+            @inputText(createFood("name"), '_label -> "Name")
+            @inputText(createFood("type"), '_label -> "Type")
+            @inputText(createFood("calories"), 'type -> "number", '_label -> "Calories")
+            @inputText(createFood("created"), 'id -> "created_input", 'type -> "datetime-local", '_label -> "Created")
+        }
+
+        @form(routes.FoodController.update(), 'id -> "update_form") {
+            @inputText(updateFood("id"), 'id -> "id_input", 'name -> "id", 'type -> "number", '_label -> "Id")
+            @inputText(updateFood("name"), 'name -> "name", '_label -> "Name")
+            @inputText(updateFood("type"), 'name -> "type", '_label -> "Type")
+            @inputText(updateFood("calories"), 'type -> "number", 'name -> "calories", '_label -> "Calories")
+        }
+        <br/>
+        <div id="buttons">
+            <input type="submit" value="Add food" form="create_form" id="add_food_btn"/>
+            <input type="submit" value="Update food" form="update_form" id="update_food_btn" disabled/>
+            <button id="close_update_btn" disabled>x</button>
+        </div>
+
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Calories</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+            @for(food <- foods) {
+                <tr class="food_row">
+                    @for(field <- food.productIterator) {
+                        <td>@field</td>
+                    }
+                <td><button class="delete_btn" onclick="onDelete(@(food.id))">X</button></td>
+                </tr>
+            }
+        </table>
+
+    </body>
+</html>
+
+

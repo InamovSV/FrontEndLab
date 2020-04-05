@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <title>Jquery app</title>
+    <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+            integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+            crossorigin="anonymous"
+    />
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Property application</a>
+    <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="properties.html">
+                    Properties <span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="users.html">Users</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div id="editContainer">
+    <p><b>Edit user</b></p>
+    <table>
+        <tr>
+            <td><input type="hidden" id="editId"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td><input type="text" id="putName"/></td>
+        </tr>
+        <tr>
+            <td>Type:</td>
+            <td><input type="text" id="putType"/></td>
+        </tr>
+        <tr>
+            <td>Calories:</td>
+            <td><input type="number" id="putCalories"/></td>
+        </tr>
+    </table>
+
+    <button id="editButton" class="button">Save</button>
+</div>
+
+<div id="createContainer">
+    <p><b>Add food</b></p>
+    <table>
+        <tr>
+            <td>Name:</td>
+            <td><input type="text" id="postName"/></td>
+        </tr>
+        <tr>
+            <td>Type:</td>
+            <td><input type="text" id="postType"/></td>
+        </tr>
+        <tr>
+            <td>Calories:</td>
+            <td><input type="number" id="postCalories"/></td>
+        </tr>
+        <tr>
+            <td>Created at:</td>
+            <td><input type="datetime-local" id="postCreated"/></td>
+        </tr>
+    </table>
+
+    <button id="createButton" class="button">Save</button>
+</div>
+
+<div id="tableContainer"></div>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+        crossorigin="anonymous"
+></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"
+></script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"
+></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        getUsers();
+        $("#editButton").click(function (event) {
+            event.preventDefault();
+            editUser();
+        });
+        $("#createButton").click(function (event) {
+            event.preventDefault();
+            createUser();
+        });
+    });
+
+    function getUsers() {
+        $("#createContainer").css("display", "block");
+        $("#editContainer").css("display", "none");
+        $.ajax({
+            url: "http://localhost:9001/api/v1",
+            crossDomain: true,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                writeResponse(data);
+            },
+            error: function (x, y, z) {
+                console.log("Error: " + x + "\n" + y + "\n" + z);
+            }
+        });
+    }
+
+    function createUser() {
+        const food = {
+            name: $("#postName").val(),
+            type: $("#postType").val(),
+            calories: $("#postCalories").val(),
+            created: $("#postCreated").val()
+        };
+        $.ajax({
+            url: "http://localhost:9001/api/v1",
+            crossDomain: true,
+            type: "POST",
+            data: JSON.stringify(food),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                getUsers();
+            },
+            error: function (x, y, z) {
+                console.log("Error: " + x + "\n" + y + "\n" + z);
+            }
+        });
+    }
+
+    function deleteUser(id) {
+        $.ajax({
+            url: "http://localhost:9001/api/v1/" + id,
+            crossDomain: true,
+            type: "DELETE",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                getUsers();
+            },
+            error: function (x, y, z) {
+                console.log("Error: " + x + "\n" + y + "\n" + z);
+            }
+        });
+    }
+
+    function editUser() {
+        var id = $("#editId").val();
+        var food = {
+            id: id,
+            name: $("#putName").val(),
+            type: $("#putType").val(),
+            calories: $("#putCalories").val(),
+            created: new Date().toISOString()
+        };
+        $.ajax({
+            url: "http://localhost:9001/api/v1" + id,
+            crossDomain: true,
+            type: "PUT",
+            data: JSON.stringify(food),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                getUsers();
+            },
+            error: function (x, y, z) {
+                console.log("Error: " + x + "\n" + y + "\n" + z);
+            }
+        });
+    }
+
+    function writeResponse(foods) {
+        var strResult =
+            "<table class='table' id='tableContainer'>" +
+            "<tr>" +
+            "<th>Name</th>" +
+            "<th>Type</th>" +
+            "<th>Calories</th>" +
+            "<th>Created</th>" +
+            "<th></th>" +
+            "</tr>";
+        $.each(foods, function (index, food) {
+            strResult += `
+            <tr>
+            <td>${food.name}</td>
+            <td>${food.type}</td>
+            <td>${food.calories}</td>
+            <td>${food.created}</td>
+            <td>
+                 <a class='c' id='editItem' data-item='${food.id}' onclick='editItem(this);'>Edit</a> |
+                 <a class='c' id='delItem' data-item='${food.id}' onclick='deleteItem(this);' >Delete</a>
+                 </td>
+            </tr>`;
+        });
+        strResult += "</table>";
+        $("#tableContainer").html(strResult);
+    }
+
+    function deleteItem(el) {
+        const id = $(el).attr("data-item");
+        deleteUser(id);
+    }
+
+    function editItem(el) {
+        const id = $(el).attr("data-item");
+        getFood(id);
+    }
+
+    function showFood(food) {
+        if (food != null) {
+            $("#createContainer").css("display", "none");
+            $("#editContainer").css("display", "block");
+            $("#editId").val(food.id);
+            $("#putName").val(food.name);
+            $("#putType").val(food.type);
+            $("#putCalories").val(food.calories);
+        } else {
+            console.log("This is no user");
+        }
+    }
+
+    function getFood(id) {
+        $.ajax({
+            url: "http://localhost:9001/api/v1/" + id,
+            crossDomain: true,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                showFood(data);
+            },
+            error: function (x, y, z) {
+                console.log("Error: " + x + "\n" + y + "\n" + z);
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+#create_form{
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+table{
+    width: 100%;
+}
+
+tr {
+    border: 1px solid #ddd;
+    margin-top: -1px; /* Prevent double borders */
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    position: relative;
+}
+
+tr td:hover {
+    background-color: #eee;
+}
+
+.delete_btn {
+    cursor: pointer;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    overflow: hidden;
+    outline: none;
+    padding: 12px 16px;
+    display: table-cell;
+    width: 100%;
+}
+
+.delete_btn:hover {background: #bbb;}
+
+#buttons{
+    display: inline-flex;
+    flex-direction: row;
+}
+
+#update_form{
+    display: none;
+}
